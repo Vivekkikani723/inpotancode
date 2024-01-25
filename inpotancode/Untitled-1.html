@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truncated File Names Display with jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Multiple file input -->
+    <input type="file" id="fileInput" multiple>
+
+    <!-- Placeholder for truncated file names -->
+    <div id="truncatedFileNamesDisplay"></div>
+
+    <script>
+        // Function to truncate the file name with a minimum length
+    (($) => {
+            // Function to truncate the file name with a minimum length
+            function truncateFileName(fileName, minLength) {
+                if (fileName.length <= minLength) {
+                    return fileName;
+                }
+
+                const start = fileName.substr(0, minLength);
+                const end = fileName.substr(-minLength);
+                return start + "..." + end;
+            }
+
+            // Function to display the truncated file names
+            function displayTruncatedFileNames() {
+
+                // Get the file input element
+                const fileInput = $("#upload-file")[0].files;
+
+                const imageEl = $('.dnd-upload-status');
+                console.log(imageEl);
+                Object.entries(fileInput).map((val, key) => {
+                    console.log(val);
+                });
+
+
+
+                // Get the element by its ID using jQuery
+                const truncatedFileNamesDisplay = $(".name");
+
+                // Clear previous content
+                truncatedFileNamesDisplay.empty();
+                // Check if files are selected
+                if (fileInput.files.length > 0) {
+                    // Loop through selected files
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        // Get the file name
+                        const fileName = fileInput.files[i].name;
+
+                        // Exclude files with ".html" extension from truncation
+                        const truncatedFileName = fileName.endsWith(".html")
+                            ? fileName
+                            : truncateFileName(fileName, 5);
+
+                        // Create a new element to display the truncated file name
+                        const fileNameElement = $("<span>").text(truncatedFileName);
+
+                        // Append the element to the display container
+                        truncatedFileNamesDisplay.append(fileNameElement);
+                    }
+                }
+            }
+            // Attach the displayTruncatedFileNames function to the change event of the file input
+            $("#upload-file").change(displayTruncatedFileNames);
+        })(jQuery);
+
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<!-- <html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truncated File Name Display with jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+
+    <input type="file" id="fileInput">
+
+    <p id="truncatedFileNameDisplay"></p>
+
+    <script>
+        ($ => {
+            // Function to truncate the file name
+            function truncateFileName(fileName, length) {
+                if (fileName.length <= length * 2) {
+                    return fileName;
+                }
+
+                const start = fileName.substr(0, length);
+                const end = fileName.substr(-length);
+                return start + "..." + end;
+            }
+
+            // Function to display the truncated file name
+            function displayTruncatedFileName() {
+                // Get the file input element
+                const fileInput = $("#upload-file")[0];
+
+                // Check if a file is selected
+                if (fileInput.files.length > 0) {
+                    // Get the file name
+                    const fileName = fileInput.files[0].name;
+
+                    // Truncate the file name
+                    const truncatedFileName = truncateFileName(fileName, 3);
+
+                    // Get the element by its ID using jQuery
+                    const truncatedFileNameDisplay = $("#truncatedFileNameDisplay");
+
+                    // Update the content with the truncated file name
+                    truncatedFileNameDisplay.text(truncatedFileName);
+                }
+            }
+
+            // Attach the displayTruncatedFileName function to the change event of the file input
+            $("#upload-file").change(displayTruncatedFileName);
+        })(jQuery)
+    </script>
+
+</body>
+
+</html> -->
