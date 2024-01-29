@@ -145,84 +145,89 @@ add_action('wp_footer', function () {
 if (!function_exists('faq_tabs')) {
     function faq_tabs()
     {
-        global $post;
-        $term_list = get_the_terms($post->ID, 'categories');
-        if (!$term_list || is_wp_error($term_list)) return '<p>No vaerd-at-vide found.</p>';
+        $queryed = get_queried_object();
+       if ($queryed instanceof WP_Term) {
         ob_start();
     ?>
         <div class="post-tab">
             <div class="tab">
                 <?php
-                foreach ($term_list as $faq) :
                     $args = array(
                         'post_type' => 'vaerd-at-vide',
+                        'post_status' => 'publish',
                         'tax_query' => array(
                             array(
                                 'taxonomy' => 'categories',
-                                'field' => 'slug',
-                                'terms' => $faq->slug,
+                                'field' => 'term_id',
+                                'terms' => $queryed->term_id,
                             ),
                         ),
+                    'orderby' => 'date',
+                    'order' => 'ASC',
                     );
 
                     $loop = 0;
-                    $posts = get_posts($args);
-                    foreach ($posts as $post_data) :
+                    // $posts = get_posts($args);
+                    $posts = new WP_Query($args);
+                    if ($posts->have_posts()) :
+                        while ($posts->have_posts()) : $posts->the_post();
                 ?>
-                        <div class="tablinks" data-tab="title-<?php echo $loop; ?>">
-                            <div class="faq-tab">
-                                <div class="d-flex">
-                                    <div class="post-icon">
-                                        <img src="<?php echo esc_url(get_field('icon', $post_data->ID)); ?>" alt="Icon">
+                            <div class="tablinks" data-tab="title-<?php echo $loop; ?>">
+                                <div class="faq-tab">
+                                    <div class="d-flex">
+                                        <div class="post-icon">
+                                            <img src="<?php echo esc_url(get_field('icon', get_the_ID())); ?>" alt="Icon">
+                                        </div>
+                                        <h3 class="post-title"><?php echo the_title(); ?></h3>
                                     </div>
-                                    <h3 class="post-title"><?php echo esc_html($post_data->post_title); ?></h3>
-                                </div>
-                                <div class="dropdown-arrow">
-                                    <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/dropdown-arrow.svg" alt="Dropdown Arrow">
+                                    <div class="dropdown-arrow">
+                                        <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/dropdown-arrow.svg" alt="Dropdown Arrow">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                 <?php
-                        $loop++;
-                    endforeach;
-                endforeach;
+                            $loop++;
+                        endwhile;
+                    endif;
                 ?>
             </div>
             <div class="tab-details">
                 <?php
                 $loop = 0;
-                foreach ($posts as $post_data) :
+                if ($posts->have_posts()) :
+                    while ($posts->have_posts()) : $posts->the_post();
                 ?>
-                    <div class="faq-tab-mobile" data-tab="title-<?php echo $loop; ?>">
-                        <div class="d-flex">
-                            <div class="post-icon">
-                                <img src="<?php echo esc_url(get_field('icon', $post_data->ID)); ?>" alt="Icon">
-                            </div>
-                            <h3 class="post-title"><?php echo esc_html($post_data->post_title); ?></h3>
-                        </div>
-                        <div class="dropdown-arrow">
-                            <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/dropdown-arrow.svg" alt="Dropdown Arrow">
-                        </div>
-                    </div>
-                    <div class="tabcontent" id="title-<?php echo $loop; ?>">
-                        <div class="post-content"><?php echo $post_data->post_content; ?></div>
-                        <h5 class="text-black">Kontakt vores ejendomsservice</h5>
-                        <div class="contact-info">
-                            <h6 class="cities-name">Sjælland | Jylland | Fyn, Rud Kristensen</h6>
-                            <div class="contact-detail">
-                                <div class="contact-icon">
-                                    <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/phone-call.svg" alt="Call Icon">
+                        <div class="faq-tab-mobile" data-tab="title-<?php echo $loop; ?>">
+                            <div class="d-flex">
+                                <div class="post-icon">
+                                    <img src="<?php echo esc_url(get_field('icon', get_the_ID())); ?>" alt="Icon">
                                 </div>
-                                <a href="tel:+45 31329542">+45 31329542</a>
+                                <h3 class="post-title"><?php echo the_title(); ?></h3>
+                            </div>
+                            <div class="dropdown-arrow">
+                                <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/dropdown-arrow.svg" alt="Dropdown Arrow">
                             </div>
                         </div>
-                        <div class="send-email-btn">
-                            <button>Send email <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/green-circle-arrow.svg" alt="Green Circle Arrow"></button>
+                        <div class="tabcontent" id="title-<?php echo $loop; ?>">
+                            <div class="post-content"><?php echo the_content(); ?></div>
+                            <h5 class="text-black">Kontakt vores ejendomsservice</h5>
+                            <div class="contact-info">
+                                <h6 class="cities-name">Sjælland | Jylland | Fyn, Rud Kristensen</h6>
+                                <div class="contact-detail">
+                                    <div class="contact-icon">
+                                        <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/phone-call.svg" alt="Call Icon">
+                                    </div>
+                                    <a href="tel:+45 31329542">+45 31329542</a>
+                                </div>
+                            </div>
+                            <div class="send-email-btn">
+                                <button>Send email <img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/green-circle-arrow.svg" alt="Green Circle Arrow"></button>
+                            </div>
                         </div>
-                    </div>
                 <?php
-                    $loop++;
-                endforeach;
+                        $loop++;
+                    endwhile;
+                endif;
                 ?>
             </div>
         </div>
@@ -248,6 +253,7 @@ if (!function_exists('faq_tabs')) {
 
 
         <?php
+        }
         return ob_get_clean();
     }
 }
@@ -339,212 +345,6 @@ if (!function_exists('flats')) {
 
 add_shortcode('flats_details', 'flats');
 
-
-
-/**
- * dispaly Contact Form
- * shortcode
- * [contact_form]
- */
-/*
-if (!function_exists('contact')) {
-    function contact()
-    {
-        ob_start();
-    ?>
-        <form>
-            <div class="housing-agent-sec contact-form">
-
-                <div class="housing-info-box">
-
-                    <!-- ................Start::Antal Rum No................. -->
-                    <div class="antal-rum-sec">
-                        <h3 class="agent-heading">Please tap on your reason to fill the form</h3>
-
-                        <div class="housing-type-fields room-num-fields">
-                            <div class="form-group">
-                                <input type="checkbox" id="administration">
-                                <label for="administration"><span>Administration</span><img src="images/building-icon.svg"></label>
-                            </div>
-                            <div class="form-group">
-                                <input type="checkbox" id="services">
-                                <label for="services"><span>Property services</span><img src="images/building-icon.svg"></label>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="checkbox" id="rental">
-                                <label for="rental"><span>Rental</span><img src="images/building-icon.svg"></label>
-                            </div>
-                        </div>
-
-                        <div class="housing-type-fields room-num-fields">
-                            <div class="form-group">
-                                <input type="checkbox" id="others">
-                                <label for="others"><span>Others</span></label>
-                            </div>
-                        </div>
-
-                        <div class="contact-form-part">
-                            <div class="w-50">
-                                <input type="text" name="" placeholder="Enter your name">
-                            </div>
-                            <div class="w-50">
-                                <input type="number" name="" placeholder="Enter your mobile number">
-                            </div>
-                            <div class="w-50">
-                                <input type="email" name="" placeholder="Enter your email">
-                            </div>
-                            <div class="w-50">
-                                <input type="text" name="" placeholder="Write your message here">
-                            </div>
-                        </div>
-                        <div class="file-info">
-                            <div class="w-50">
-                                <div class="add-file">
-                                    <p class="text-black">Tilføjer filer (maks. 10mb)</p>
-                                    <a href="">Tilføj flere filer</a>
-                                </div>
-                                <div class="file-upload mb-3">
-                                    <input id="file1" class="file1" type="file" multiple name="file1[]" />
-                                    <div class="kwt-file-container"></div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group next-btns">
-                    <button class="submit-rantal-form" name="submit-rantal-form">
-                        <img src="https://anderst30.sg-host.com/wp-content/uploads/2023/12/green-circle-arrow.svg">Indsend</button>
-                </div>
-
-            </div>
-        </form>
-
-        <script>
-            (function($) {
-                var customDragandDrop = function(element) {
-                    $(element).addClass("kwt-file__input");
-                    var element = $(element).wrap(
-                        `<div class="kwt-file">
-                        <div class="kwt-file__drop-area">
-                            <span class='kwt-file__choose-file ${element.attributes.data_btn_text
-                        ? "" === element.attributes.data_btn_text.textContent
-                            ? ""
-                            : "kwt-file_btn-text"
-                        : ""
-                    }'>${element.attributes.data_btn_text
-                        ? "" === element.attributes.data_btn_text.textContent
-                            ? `<img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/phone-call.svg" />`
-                            : `${element.attributes.data_btn_text.textContent}`
-                        : `<img src="http://anderst30.sg-host.com/wp-content/uploads/2023/12/phone-call.svg" />`
-                    }</span>${element.outerHTML}Filnavn<span class="kwt-file__msg"></span><div class="kwt-file__delete"></div></div></div>`
-                    );
-                    var element = element.parents(".kwt-file");
-
-                    // Add class on focus and drag enter event.
-                    element.on("dragenter focus click", ".kwt-file__input", function(e) {
-                        $(this).parents(".kwt-file__drop-area").addClass("is-active");
-                    });
-
-                    // Remove class on blur and drag leave event.
-                    element.on("dragleave blur drop", ".kwt-file__input", function(e) {
-                        $(this).parents(".kwt-file__drop-area").removeClass("is-active");
-                    });
-
-                    // Show filename and handle file size validation.
-                    element.on("change", ".kwt-file__input", function(e) {
-                        let filesCount = $(this)[0].files.length;
-                        let textContainer = $(this).next(".kwt-file__msg");
-
-                        // Check file size
-                        let maxSize = 10 * 1024 * 1024; // 10 MB in bytes
-
-                        for (let i = 0; i < filesCount; i++) {
-                            if ($(this)[0].files[i].size > maxSize) {
-                                textContainer.text("File size should be 10 MB or less.");
-                                $(this).parents(".kwt-file").find(".kwt-file__delete").css("display", "none");
-                                // Clear the file input
-                                $(this).val(null);
-                                return;
-                            }
-                        }
-
-                        if (filesCount > 0) {
-                            let fileNames = [];
-                            let totalSize = 0;
-
-                            for (let i = 0; i < filesCount; i++) {
-                                fileNames.push($(this)[0].files[i].name);
-                                totalSize += $(this)[0].files[i].size;
-                            }
-
-                            if (totalSize > maxSize) {
-                                textContainer.text("Total size should be 10 MB or less.");
-                                $(this).parents(".kwt-file").find(".kwt-file__delete").css("display", "none");
-                                // Clear the file input
-                                $(this).val(null);
-                            } else {
-                                textContainer
-                                    .text(fileNames.join(", "))
-                                    .next(".kwt-file__delete")
-                                    .css("display", "inline-block");
-                            }
-                        } else {
-                            textContainer.text("Filnavn");
-                            $(this).parents(".kwt-file").find(".kwt-file__delete").css("display", "none");
-                        }
-                    });
-
-                    // Delete selected file.
-                    element.on("click", ".kwt-file__delete", function(e) {
-                        let deleteElement = $(this);
-                        deleteElement.parents(".kwt-file").find(`.kwt-file__input`).val(null);
-                        deleteElement
-                            .css("display", "none")
-                            .prev(`.kwt-file__msg`)
-                            .text("");
-                    });
-                };
-
-                $.fn.kwtFileUpload = function() {
-                    var _this = $(this);
-                    $.each(_this, function(index, element) {
-                        customDragandDrop(element);
-                    });
-                    return this;
-                };
-
-                // Function to add more file inputs dynamically
-                $(".add-more-files").on("click", function() {
-                    let container = $(".kwt-file-container");
-                    let fileInput = $("<input>").attr({
-                        type: "file",
-                        class: "kwt-file__input",
-                        multiple: "multiple",
-                        name: "file1[]"
-                    });
-                    container.append(fileInput);
-                });
-            })(jQuery);
-
-            // Plugin initialize
-            jQuery(document).ready(function($) {
-                $(".file1").kwtFileUpload();
-            });
-        </script>
-<?php
-        return ob_get_clean();
-    }
-}
-
-add_shortcode('contact_form', 'contact');
-
-*/
-
-
-
 /**
  * Contact Form file upload js
  */
@@ -558,13 +358,13 @@ function add_custom_script()
                 function truncateFileName(fileName, minLength) {
                     return fileName.length <= minLength ? fileName : `${fileName.substr(0, minLength)}...${fileName.substr(-minLength)}`;
                 }
-    
+
                 // Function to modify file name based on certain conditions
                 function modifyFileName(fileName) {
                     // Exclude files with ".html" extension from truncation
                     return fileName.endsWith(".html") ? fileName : truncateFileName(fileName, 5);
                 }
-    
+
                 // Function to display truncated file names
                 function displayTruncatedFileNames() {
                     // Select all elements with the class "dnd-upload-status"
@@ -573,7 +373,7 @@ function add_custom_script()
                         element.textContent = modifyFileName(element.textContent);
                     });
                 }
-    
+
                 // Attach the displayTruncatedFileNames function to the change event of the file input with ID "upload-file"
                 $("#upload-file").change(displayTruncatedFileNames);
             }, 1000);

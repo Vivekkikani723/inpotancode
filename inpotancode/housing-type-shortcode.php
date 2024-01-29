@@ -78,7 +78,7 @@ if (!function_exists('discover_housing_types')) {
                                             <?php foreach ($images as $image) : ?>
                                                 <div class="slider-for">
                                                     <div><img src="<?php echo $image; ?>"></div>
-                                                    <div class="thumb-counter"></div>
+                                                    <!-- <div class="thumb-counter"></div> -->
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
@@ -186,17 +186,19 @@ if (!function_exists('housing_type_tab_script')) {
                             responsive: [{
                                     breakpoint: 768,
                                     settings: {
-                                        slidesToShow: 3
+                                        slidesToShow: 6
                                     }
                                 },
                                 {
                                     breakpoint: 480,
                                     settings: {
-                                        slidesToShow: 2
+                                        slidesToShow: 6
                                     }
                                 }
                             ]
                         });
+
+                        // updateThumbCounter($('.tabcontent.active .image-gallery'), 0, $('.tablinks.active').index());
 
                         $('.image-gallery').on('init reInit afterChange', function(event, slick, currentSlide) {
                             // Pass the active tab index to updateThumbCounter
@@ -207,6 +209,21 @@ if (!function_exists('housing_type_tab_script')) {
                             itemSelector: `.js-gallery-popup-${index} img`, // Use the index to target the correct tab content
                             background: 'rgba(0, 0, 0, .7)'
                         });
+
+                        // $('.tabcontent.active .slider-nav').slickLightbox().on({
+                        //     'shown.slickLightbox': function() {
+                        //         $("body").css({
+                        //             overflow: "hidden",
+                        //             height: "100vh"
+                        //         });
+                        //     },
+                        //     'hide.slickLightbox': function() {
+                        //         $("body").css({
+                        //             overflow: "auto",
+                        //             height: "auto"
+                        //         });
+                        //     },
+                        // });
 
                         const handleMegnifyImage = () => {
                             $(`.slider-nav .slick-track .slick-current.slick-active .js-gallery-popup-${index} img`).click();
@@ -242,7 +259,7 @@ if (!function_exists('housing_type_tab_script')) {
                     const content = document.querySelector("#post-content .fl-rich-text");
                     const button = document.querySelector("#read-more");
 
-                    const MIN_CONTENT_LENGTH = 300;
+                    const MIN_CONTENT_LENGTH = 200;
                     const contentText = content.innerText.trim();
                     const isContentLongEnough = contentText.split(/\s+/).length >= MIN_CONTENT_LENGTH;
 
